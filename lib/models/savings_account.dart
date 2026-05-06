@@ -1,4 +1,4 @@
-import 'package:bank_account_center/account.dart';
+import "../bank_acount_center.dart";
 
 class SavingsAccount extends Account {
   int _balance = 0;
@@ -13,7 +13,12 @@ class SavingsAccount extends Account {
   }
 
   @override
-  void deposite({required int balance}) {
+  int showBalance() {
+    return _balance;
+  }
+
+  @override
+  void deposit({required int balance}) {
     if (balance > 0) {
       _balance += balance;
       print("deposite done");
@@ -21,12 +26,7 @@ class SavingsAccount extends Account {
   }
 
   @override
-  int showBalance() {
-    return _balance + _minBalance;
-  }
-
-  @override
-  void withDraw({required int amount}) {
+  void withdraw({required int amount}) {
     if ((_balance - amount) > _minBalance) {
       _balance -= amount;
       print("withDraw done");
