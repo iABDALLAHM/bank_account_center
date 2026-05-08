@@ -4,10 +4,6 @@ class BankSystemCli {
   final BankSystemInterface bankSystem;
   final BankSystemView bankSystemView;
   final InputHandler inputHandler;
-
-  /// انا عايز ال object في scope عالي شوية اعمل ايه عشان نظبط الموضوع ده ؟
-  late SavingsAccount newSavingsAccount;
-  late CheckingAccount newCheckingAccount;
   bool isRunning;
   BankSystemCli({
     this.isRunning = true,
@@ -91,7 +87,8 @@ class BankSystemCli {
             print("Invalid amount. Please enter a positive number.");
             return;
           }
-          newSavingsAccount.withdraw(amount: amount);
+
+          account.withdraw(amount: amount);
         }
 
         if (choice == "2") {
@@ -103,7 +100,7 @@ class BankSystemCli {
             return;
           }
 
-          newSavingsAccount.deposit(balance: balance);
+          account.deposit(balance: balance);
         }
 
       case AccountType.checkingAccount:
@@ -140,7 +137,7 @@ class BankSystemCli {
             print("Invalid amount. Please enter a positive number.");
             return;
           }
-          newCheckingAccount.withdraw(amount: amount);
+          account.withdraw(amount: amount);
         }
 
         if (choice == "2") {
@@ -152,7 +149,7 @@ class BankSystemCli {
             return;
           }
 
-          newCheckingAccount.deposit(balance: balance);
+          account.deposit(balance: balance);
         }
     }
   }

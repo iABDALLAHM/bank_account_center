@@ -1,3 +1,7 @@
+// import 'dart:convert';
+// import 'dart:typed_data';
+// import 'package:crypto/crypto.dart';
+
 class UserDetails {
   final String name;
   final String address;
@@ -17,4 +21,9 @@ class UserDetails {
   String toString() {
     return "UserDetails(name: $name, email: $email, phone: $phoneNumber, address: $address)";
   }
+
+  // String _hashPassword(String password) {
+  //   final bytes = utf8.encode(password);
+  //   return sha256.convert(bytes).toString();
+  // }
 }
