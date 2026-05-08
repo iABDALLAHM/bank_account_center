@@ -18,7 +18,6 @@ class BankSystemCli {
       String? choice = inputHandler.readLine(
         label: "please choose from these:\n",
       );
-
       switch (choice) {
         case MenuOptions.createSavingAccount:
           createNewAccount(accountType: AccountType.savingAccount);
@@ -33,11 +32,8 @@ class BankSystemCli {
           break;
 
         case MenuOptions.enterToYourSavingAccount:
-          _enterToYourAccount(accountType: AccountType.savingAccount);
-          break;
-
         case MenuOptions.enterToYourCheckingAccount:
-          _enterToYourAccount(accountType: AccountType.checkingAccount);
+          _enterToYourAccount();
           break;
 
         case MenuOptions.exit:
@@ -51,106 +47,93 @@ class BankSystemCli {
     }
   }
 
-  void _enterToYourAccount({required AccountType accountType}) {
-    switch (accountType) {
-      case AccountType.savingAccount:
-        String? password = inputHandler.readLine(
-          label: "please enter your password",
-        );
+  void _enterToYourAccount() {
+    var account = authenticateAccount();
 
-        if (password == null) {
-          bankSystemView.showMessage(message: "invalid Input\n");
-          return;
-        }
+    if (account == null) {
+      bankSystemView.showMessage(message: "You do not exist in this system\n");
+      return;
+    }
 
-        var account = bankSystem.findAccountByPassword(password: password);
-        if (account == null) {
-          bankSystemView.showMessage(
-            message: "You do not exist in this system\n",
-          );
-          return;
-        }
+    handleOperations(existAccount: account);
+  }
 
-        bankSystemView.showMessage(message: "please Choose: \n");
-        String? choice = inputHandler.readLine(label: "1.WithDraw\n2.Deposite");
+  Account? authenticateAccount() {
+    String? password = inputHandler.readLine(
+      label: "Please enter your password",
+    );
 
-        if (choice == null) {
-          bankSystemView.showMessage(message: "invalid Input\n");
-          return;
-        }
+    if (password == null) {
+      bankSystemView.showMessage(message: "invalid Input\n");
+      return null;
+    }
 
-        if (choice == "1") {
-          String input =
-              inputHandler.readLine(label: "please enter amount") ?? "";
-          int? amount = int.tryParse(input);
-          if (amount == null || amount <= 0) {
-            print("Invalid amount. Please enter a positive number.");
-            return;
-          }
+    var account = bankSystem.findAccountByPassword(password: password);
+    return account;
+  }
 
-          account.withdraw(amount: amount);
-        }
+  void handleOperations({required Account existAccount}) {
+    bankSystemView.showMessage(message: "Please Choose: \n");
+    String? choice = inputHandler.readLine(label: "1.WithDraw\n2.Deposite");
 
-        if (choice == "2") {
-          String input =
-              inputHandler.readLine(label: "please enter balance") ?? "";
-          int? balance = int.tryParse(input);
-          if (balance == null || balance <= 0) {
-            print("Invalid amount. Please enter a positive number.");
-            return;
-          }
+    if (choice == null) {
+      bankSystemView.showMessage(message: "invalid Input\n");
+      return;
+    }
 
-          account.deposit(balance: balance);
-        }
+    if (choice == "1") {
+      handleWithdraw(existAccount: existAccount);
+    }
 
-      case AccountType.checkingAccount:
-        String? password = inputHandler.readLine(
-          label: "please enter your password",
-        );
+    if (choice == "2") {
+      handleDeposit(existAccount: existAccount);
+    }
+  }
 
-        if (password == null) {
-          bankSystemView.showMessage(message: "invalid Input\n");
-          return;
-        }
+  void handleDeposit({required Account existAccount}) {
+    String input =
+        inputHandler.readLine(label: "Please enter the balance") ?? "";
+    int? balance = int.tryParse(input);
+    if (balance == null || balance <= 0) {
+      bankSystemView.showMessage(
+        message: "Invalid amount. Please enter a positive number.\n",
+      );
+      return;
+    }
 
-        var account = bankSystem.findAccountByPassword(password: password);
-        if (account == null) {
-          bankSystemView.showMessage(
-            message: "You do not exist in this system\n",
-          );
-          return;
-        }
+    var result = existAccount.deposit(balance: balance);
 
-        bankSystemView.showMessage(message: "please Choose: \n");
-        String? choice = inputHandler.readLine(label: "1.WithDraw\n2.Deposite");
+    if (result) {
+      bankSystemView.showMessage(message: "Operation Done\n");
+      return;
+    }
 
-        if (choice == null) {
-          bankSystemView.showMessage(message: "invalid Input\n");
-          return;
-        }
+    if (result == false) {
+      bankSystemView.showMessage(message: "Operation Not successful\n");
+      return;
+    }
+  }
 
-        if (choice == "1") {
-          String input =
-              inputHandler.readLine(label: "please enter amount") ?? "";
-          int? amount = int.tryParse(input);
-          if (amount == null || amount <= 0) {
-            print("Invalid amount. Please enter a positive number.");
-            return;
-          }
-          account.withdraw(amount: amount);
-        }
+  void handleWithdraw({required Account existAccount}) {
+    String input =
+        inputHandler.readLine(label: "Please enter the amount") ?? "";
+    int? amount = int.tryParse(input);
+    if (amount == null || amount <= 0) {
+      bankSystemView.showMessage(
+        message: "Invalid amount. Please enter a positive number.\n",
+      );
+      return;
+    }
 
-        if (choice == "2") {
-          String input =
-              inputHandler.readLine(label: "please enter balance") ?? "";
-          int? balance = int.tryParse(input);
-          if (balance == null || balance <= 0) {
-            print("Invalid amount. Please enter a positive number.");
-            return;
-          }
+    var result = existAccount.withdraw(amount: amount);
+    if (result) {
+      bankSystemView.showMessage(message: "Operation Done\n");
+      return;
+    }
 
-          account.deposit(balance: balance);
-        }
+    if (result == false) {
+      bankSystemView.showMessage(message: "Operation not successful\n");
+      return;
     }
   }
 
@@ -175,6 +158,7 @@ class BankSystemCli {
         );
 
         addToSystem(newAccount: newSavingsAccount);
+        break;
 
       case AccountType.checkingAccount:
         var userDetails = collectUserDetails();
@@ -195,13 +179,14 @@ class BankSystemCli {
         );
 
         addToSystem(newAccount: newCheckingAccount);
+        break;
     }
   }
 
   void addToSystem({required Account newAccount}) {
     var result = bankSystem.addNewAccount(newAccount: newAccount);
     if (result) {
-      bankSystemView.showMessage(message: "Account Created Successful\n");
+      bankSystemView.showMessage(message: "Account Created Successfully\n");
     } else {
       bankSystemView.showMessage(message: "This Account is Already Exist\n");
     }

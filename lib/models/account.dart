@@ -7,9 +7,9 @@ abstract class Account {
   @override
   String toString();
 
-  void deposit({required int balance});
+  bool deposit({required int balance});
 
-  void withdraw({required int amount});
+  bool withdraw({required int amount});
 
   int showBalance();
 }

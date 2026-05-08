@@ -15,14 +15,20 @@ class CheckingAccount extends Account {
   }
 
   @override
-  void deposit({required int balance}) {
-    _balance += balance;
+  bool deposit({required int balance}) {
+    if (balance > 0) {
+      _balance += balance;
+      return true;
+    }
+    return false;
   }
 
   @override
-  void withdraw({required int amount}) {
+  bool withdraw({required int amount}) {
     if (amount <= _balance) {
       _balance -= amount;
+      return true;
     }
+    return false;
   }
 }
